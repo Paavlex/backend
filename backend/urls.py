@@ -2,7 +2,12 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from dpbackend import views
-from dpbackend.views import cesta_predmetu, get_all_cards,order_card, user_register
+from dpbackend.views import cesta_predmetu, get_all_cards,order_card, user_register, MyTokenObtainPairView
+
+from rest_framework_simplejwt.views import (
+
+    TokenRefreshView,
+)
 
 
 
@@ -24,5 +29,8 @@ urlpatterns = [
     path('vsechnykese/', get_all_cards.as_view()),
     path('objednani/', order_card.as_view()),
     path('register/', user_register.as_view()),
+    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
     
 ]

@@ -21,6 +21,9 @@ from dpbackend.serializers import KartaSerializer, PutovniPredmetSerializer, Sbe
 from dpbackend.models import Karta, PutovniPredmet, SberatelskyPredmet
 
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 
 # Class views pro modely
@@ -128,3 +131,18 @@ class user_register(APIView):
         user = get_user_model().objects.create_user(username=request.data["username"], email=request.data["email"], password=request.data["password"])
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+
+        return token
+    
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
