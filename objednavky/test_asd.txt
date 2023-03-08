@@ -1,0 +1,1 @@
+{"firstname": "asd", "lastname": "test", "city": "esdf", "street": "Ul, 1", "psc": "12345", "phone": "123 456 789", "email": "asd@asd.cz", "cachename": "Moje", "lng": "12", "lat": "34"}
