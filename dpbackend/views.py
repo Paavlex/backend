@@ -9,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -28,7 +28,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Class views pro modely
 
-class hrac_list(viewsets.ModelViewSet):
+class hrac_viewset(viewsets.ModelViewSet):
     queryset = Hrac.objects.all()
     serializer_class = HracSerializer
     
@@ -36,12 +36,12 @@ class hrac_list(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         params = kwargs
-        hrac = Hrac.objects.get(username= params['pk'])
+        hrac = Hrac.objects.get(id= params['pk'])
         serializer = HracSerializer(hrac)
         return Response(serializer.data)
 
         
-class karta_list(viewsets.ModelViewSet):
+class karta_viewset(viewsets.ModelViewSet):
     queryset = Karta.objects.all()
     serializer_class = KartaSerializer
 
@@ -52,12 +52,22 @@ class karta_list(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         params = kwargs
-        karta = Karta.objects.get(vlastnik= params['pk'])
-        serializer = KartaSerializer(karta)
-        return Response(serializer.data)
+        
+        try:
+
+            karta = Karta.objects.get(vlastnik= params['pk'])
+            serializer = KartaSerializer(karta)
+            return Response(serializer.data)
+        except:
+            dict = {
+                'putpredmet': 'TG0000000000000000000000000000'
+            }
+            return Response(dict)
+        
+           
 
 
-class putovni_predmet_list(viewsets.ModelViewSet):
+class putovni_predmet_viewset(viewsets.ModelViewSet):
     queryset = PutovniPredmet.objects.all()
     serializer_class = PutovniPredmetSerializer
     filter_fields = ('vlastnik')
@@ -65,9 +75,17 @@ class putovni_predmet_list(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         params = kwargs
-        predmet = PutovniPredmet.objects.get(idpozice= params['pk'])
-        serializer = PutovniPredmetSerializer(predmet)
-        return Response(serializer.data)
+
+        try:
+            predmet = PutovniPredmet.objects.get(idpozice= params['pk'])
+            serializer = PutovniPredmetSerializer(predmet)
+            return Response(serializer.data)
+        except:
+            dict = {
+                'idputpredmetu': 'TG0000000000000000000000000000',
+                'cesta': 'assets/img/putpred2.jpg'
+            }
+            return Response(dict)
 
 class sberatelsky_predmet_list(viewsets.ModelViewSet):
     queryset = SberatelskyPredmet.objects.all()
@@ -77,8 +95,8 @@ class sberatelsky_predmet_list(viewsets.ModelViewSet):
 # Běžné class based views
 class cesta_predmetu(APIView):
     def get(self, request, *args, **kwargs):
-        vlastnikpredmetu = kwargs.get('vlastnik')
-        predmet = PutovniPredmet.objects.get(vlastnik=vlastnikpredmetu)
+        params = kwargs
+        predmet = PutovniPredmet.objects.get(vlastnik=params['vlastnik'])
         serializerpredmetu = PutovniPredmetSerializer(predmet)
         kartydict = []
 
@@ -130,9 +148,24 @@ class user_register(APIView):
     def post(self, request):
         user = get_user_model().objects.create_user(username=request.data["username"], email=request.data["email"], password=request.data["password"])
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        print(serializer.data)
+        
+        hrac = {
+            'username': request.data["username"],
+            'mail': request.data["email"],
+            'user': serializer.data['id']
+        }
+        print(hrac)
+        hrac_serializer = HracSerializer(data=hrac)
+        
+        hrac_serializer.is_valid(raise_exception=True)
+        hrac_serializer.save()
+
+        return Response(hrac_serializer.data)
 
 
+
+# Vytvoření tokenu s vlastními poli
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

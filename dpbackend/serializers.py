@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class HracSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hrac
-        fields = ['id','username','mail','password','idhrace','otevrenekese','otevrenekesepoc','putpredmet','putpredmety','sberpredmet','pocetsberpred','vlastnenekese','registrace']
+        fields = ['id','username','user','mail','otevrenekese','otevrenekesepoc','putpredmet','putpredmety','sberpredmet','pocetsberpred','vlastnenekese','registrace']
 
 class KartaSerializer(serializers.ModelSerializer):
     class Meta:

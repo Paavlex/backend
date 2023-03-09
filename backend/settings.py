@@ -90,6 +90,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 
+
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -97,7 +98,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'NAME': 'DpDatabaze2',
+        'NAME': 'DpDatabaze',
 
         'USER': 'postgres',
 
@@ -155,7 +156,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': [
+   'rest_framework.permissions.IsAuthenticated',
+]
+
 }
 
 SIMPLE_JWT = {

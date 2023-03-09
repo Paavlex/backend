@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 import datetime
 #from django.contrib.auth.base_user import BaseUserManager
 #from django.contrib.auth.models import AbstractUser
-
+from django.contrib.auth import get_user_model
 
 ##########   Vytvareni modelu, podle kterych se vytvori tabulky v databazi   #########
 
@@ -48,10 +48,10 @@ class Hrac(models.Model):
     mail = models.EmailField()
 
     # heslo hrace
-    password = models.CharField(max_length=255,default='heslo')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     # id hrace
-    idhrace = models.CharField(max_length=30)
+    
 
     # seznam otevrenych kesi
     otevrenekese = ArrayField(models.TextField(), default=otevrenekese_default, blank=True)
