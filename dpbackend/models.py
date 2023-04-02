@@ -38,8 +38,11 @@ class Hrac(models.Model):
     def vlastnenekese_default():
         default = []
         return default
-    
-
+    def player_id_default():
+        default = "P000000000000000000000"
+        return default
+    def putovni_predmet_default():
+        return "TG00000000000000000000"
 
     # jmeno hrace
     username = models.CharField(max_length=30)
@@ -51,14 +54,14 @@ class Hrac(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     # id hrace
-    
+    player_id = models.CharField(max_length=22, default=player_id_default)
 
     # seznam otevrenych kesi
     otevrenekese = ArrayField(models.TextField(), default=otevrenekese_default, blank=True)
 
     otevrenekesepoc = models.IntegerField(default=0)
     # aktualni putovni predmet
-    putpredmet = models.CharField(max_length=30, default='')
+    putpredmet = models.CharField(max_length=30, default=putovni_predmet_default)
 
     # koupene putovni predmety
     putpredmety = ArrayField(models.CharField(max_length=30), default=putpredmety_default, blank=True)
@@ -82,9 +85,13 @@ class Hrac(models.Model):
 # Vytovreni modelu karty
 class Karta(models.Model):
 
-    def putovni_predmet_default():
-        return "TG0000000000000000000000000000"
+    def card_id_default():
+        return "GC0000000000"
 
+    def putovni_predmet_default():
+        return "TG00000000000000000000"
+    
+    
     # id karty
     idkarty = models.CharField(max_length=12)
 
@@ -103,11 +110,23 @@ class Karta(models.Model):
 
     # pocet nalezu karty
     pocetnalezu = models.IntegerField(default=0)
+    
+    popis = models.TextField(default='')
+    
+    
+    
 
 # Vytvoreni modelu putovniho predmetu
 class PutovniPredmet(models.Model):
+    
+    def putovni_predmet_default():
+        return "TG00000000000000000000"
+    def upload_path(instance, filename):
+        return '/'.join(['predmety', str(instance.vlastnik), filename])
+    
+    
     # id putocniho predmetu
-    idputpredmetu = models.CharField(max_length=30)
+    idputpredmetu = models.CharField(max_length=30, default=putovni_predmet_default)
 
     # kde se predmet nachazi: karta nebo aplikace (T/F) {Karta - True; Aplikace - False}
     pozice = models.BooleanField(default=False)
@@ -119,12 +138,14 @@ class PutovniPredmet(models.Model):
     vlastnik = models.CharField(max_length=30)
 
     # kde vsude se predmet nachazel
-    karty = ArrayField(models.CharField(max_length=12, default='card'), default=list, blank=True)
+    karty = ArrayField(models.CharField(max_length=12, default=''), default=list, blank=True)
 
     # cesta k ulozenemu obrazku
-    cesta = models.CharField(max_length = 100, default='')
+    cesta = models.CharField(max_length = 100, default="images/")
+    
+    obrazek = models.ImageField(blank=True, null=True, upload_to="images/")
 
-    def __str__(self):
-        return self.vlastnik
+    #def __str__(self):
+    #    return self.vlastnik
 
 

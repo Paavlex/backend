@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,15 +26,15 @@ SECRET_KEY = 'django-insecure-&5(hum6ns7!l7i1$o^jh5%9gnr!_p*pso!00q6swvbvyp3gu=4
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+# Povolení hosti
 ALLOWED_HOSTS = ['*',
 ]
-#CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200' 
-]
+CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ALLOWED_ORIGINS = [
+#    'http://localhost:4200' 
+#]
 
-
+# Povolení posílání tokenů
 CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
@@ -93,7 +94,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+# Nastavení databáze
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -152,7 +153,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# nastavení přístupu k API
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -160,10 +161,11 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': [
    'rest_framework.permissions.IsAuthenticated',
+   'rest_framework.permissions.AllowAny',
 ]
 
 }
-
+# Nastavení JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -203,3 +205,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+# Nastavení cety pro obrázky
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
