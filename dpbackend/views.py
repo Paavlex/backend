@@ -62,7 +62,7 @@ class karta_viewset(viewsets.ModelViewSet):
             return Response(serializer.data)
         except:
             dict = {
-                'putpredmet': 'TG0000000000000000000000000000'
+                'putpredmet': 'TG00000000000000000000'
             }
             return Response(dict)
         
@@ -90,7 +90,7 @@ class putovni_predmet_viewset(viewsets.ModelViewSet):
             
             # Pokud objekt neexistuje, vrací prázný sběratelský předmět
             dict = {
-                'idputpredmetu': 'TG0000000000000000000000000000',
+                'idputpredmetu': 'TG00000000000000000000',
                 'cesta': 'assets/img/putpred2.jpg'
             }
             return Response(dict)
@@ -282,7 +282,7 @@ class user_register(APIView):
 
         
         # TODO: certifikát
-        certhelper.createcert(newSer.data['player_id'])
+        #certhelper.createcert(newSer.data['player_id'])
         
         
         return Response(newSer.data)
@@ -298,19 +298,19 @@ class item_upload(APIView):
         
         
         image = request.data['obrazek']
-        player = request.data['idpozice']
+        player_id = request.data['idpozice']
         vlas = request.data['vlastnik']
         cesta = request.data['cesta']
-        player = Hrac.objects.get(id = player)
+        player = Hrac.objects.get(id = player_id)
         playerSerializer = HracSerializer(player)
-        
+        print(player)
         # Kontrola zda již hráč nemá u sebe putovní předmět
         if (playerSerializer.data['putpredmet'] == "TG00000000000000000000"):
         
             item ={
                 'vlastnik':vlas,
                 'obrazek':image,
-                'idpozice':player,
+                'idpozice':player_id,
                 'cesta':"images/"+cesta
                 }
             
