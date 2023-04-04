@@ -8,12 +8,12 @@ from django.contrib.auth import get_user_model
 ##########   Vytvareni modelu, podle kterych se vytvori tabulky v databazi   #########
 
 # Vytvoreni sberatelskeho predmetu pro hrace
-class SberatelskyPredmet(models.Model):
-    # id predmetu
-    idsberpredmetu = models.CharField(max_length=30)
-
+#class SberatelskyPredmet(models.Model):
+#    # id predmetu
+#    idsberpredmetu = models.CharField(max_length=30)##
+#
     # zda byl jiz nalezen (T/F)
-    nalezeno = models.BooleanField()
+#    nalezeno = models.BooleanField()
 
 
 # Vytvoreni modelu hrace
@@ -50,7 +50,7 @@ class Hrac(models.Model):
     # email hrace
     mail = models.EmailField()
 
-    # heslo hrace
+    # vazba na user model
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     # id hrace
@@ -59,7 +59,9 @@ class Hrac(models.Model):
     # seznam otevrenych kesi
     otevrenekese = ArrayField(models.TextField(), default=otevrenekese_default, blank=True)
 
+    # pocet otevrených kesi
     otevrenekesepoc = models.IntegerField(default=0)
+    
     # aktualni putovni predmet
     putpredmet = models.CharField(max_length=30, default=putovni_predmet_default)
 
@@ -74,6 +76,7 @@ class Hrac(models.Model):
     # seznam vlastnenych kesi
     vlastnenekese = ArrayField(models.CharField(max_length=12), default=vlastnenekese_default, blank=True)
 
+    # datum registrace
     registrace = models.DateField(auto_now_add=True)
 
     

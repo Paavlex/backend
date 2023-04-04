@@ -2,19 +2,19 @@ from subprocess import call
 
 # Funkce pro vztvoření klíče, cert. requestu a certifikátu, použití openssl
 def createcert(name):
-    keydir = "keyes/"
+    keydir = "certdir/keyes/"
     #name = "P000000000000000000001"
     keyend = ".key"
 
     keypath = keydir+name+keyend
 
-    requestdir = "requests/"
+    requestdir = "certdir/requests/"
     reqend = ".csr"
     requestpath = requestdir+name+reqend
     cn = "/CN="
     CNname = cn+name
 
-    certdir = "certs/"
+    certdir = "certdir/certs/"
     certend = ".crt"
     certpath = certdir+name+certend
 

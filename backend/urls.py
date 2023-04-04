@@ -19,7 +19,7 @@ router = routers.DefaultRouter()
 router.register(r'hraci', views.hrac_viewset)
 router.register(r'karty', views.karta_viewset)
 router.register(r'putovnipredmety', views.putovni_predmet_viewset)
-router.register(r'sberpredmety', views.sberatelsky_predmet_list)
+#router.register(r'sberpredmety', views.sberatelsky_predmet_list)
 
 
 # Vytovoření cest pro API
@@ -39,9 +39,7 @@ urlpatterns = [
     path('vsechnykeseandroid/',get_all_cards_andoid.as_view()),
     path('jeden-predmet/<int:pk>',put_predmet_pozice.as_view()),
     path('upload/', item_upload.as_view()),
-    
     path('game/',open_cache.as_view()),
-
     path('putovnipredmety/<int:pk>', putovni_predmet_list_retrieve),
 
     

@@ -18,15 +18,15 @@ from django.contrib.auth import get_user_model
 
 from dpbackend.models import Hrac
 from dpbackend.serializers import HracSerializer
-from dpbackend.serializers import KartaSerializer, PutovniPredmetSerializer, SberatelskyPredmetSerializer, UserSerializer
-from dpbackend.models import Karta, PutovniPredmet, SberatelskyPredmet
+from dpbackend.serializers import KartaSerializer, PutovniPredmetSerializer, UserSerializer
+from dpbackend.models import Karta, PutovniPredmet
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from . import idhelper
-
+from . import certhelper
 # Class views pro modely
 
 class hrac_viewset(viewsets.ModelViewSet):
@@ -56,9 +56,7 @@ class karta_viewset(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         params = kwargs
         print("trying")
-        
         try:
-
             karta = Karta.objects.filter(vlastnik= params['pk'])
             serializer = KartaSerializer(karta, many=True)
             return Response(serializer.data)
@@ -70,11 +68,12 @@ class karta_viewset(viewsets.ModelViewSet):
         
            
 
-# Retrieve získává jeden, nebo několik daných objektů v databázi
+
 class putovni_predmet_viewset(viewsets.ModelViewSet):
     queryset = PutovniPredmet.objects.all()
     serializer_class = PutovniPredmetSerializer
 
+    # Retrieve získává jeden, nebo několik daných objektů v databázi
     def retrieve(self, request, *args, **kwargs):
         params = kwargs
         
@@ -97,18 +96,18 @@ class putovni_predmet_viewset(viewsets.ModelViewSet):
             return Response(dict)
         
         
-    def post(self, request, *args, **kwargs):
-        obrazek = request.data['obrazek']
-        vlastnik = request.data['vlastnik']
-        idpozice = request.data['idpozice']
-        
-        
-        PutovniPredmet.objects.create(vlastnik=vlastnik,obrazek=obrazek,idpozice=idpozice)
-        return Response({"Created": True})
+    #def post(self, request, *args, **kwargs):
+    #    obrazek = request.data['obrazek']
+    #    vlastnik = request.data['vlastnik']
+    #    idpozice = request.data['idpozice']
+    #    
+    #    
+    #    PutovniPredmet.objects.create(vlastnik=vlastnik,obrazek=obrazek,idpozice=idpozice)
+    #    return Response({"Created": True})
 
-class sberatelsky_predmet_list(viewsets.ModelViewSet):
-    queryset = SberatelskyPredmet.objects.all()
-    serializer_class = SberatelskyPredmetSerializer
+#class sberatelsky_predmet_list(viewsets.ModelViewSet):
+#    queryset = SberatelskyPredmet.objects.all()
+#    serializer_class = SberatelskyPredmetSerializer
 
 
 
@@ -119,19 +118,21 @@ class put_predmet_pozice(APIView):
     # Zídkání putovního předmětu na dané pozici
     def get(self, params, *args, **kwargs):
         params = kwargs
-        predmet = PutovniPredmet.objects.get(idpozice=params['pk'])
-        serializer = PutovniPredmetSerializer(predmet)
+        try:
+            predmet = PutovniPredmet.objects.get(idpozice=params['pk'])
+            serializer = PutovniPredmetSerializer(predmet)
+            return Response(serializer.data)
+        except:
+            return Response({
+                'idputpredmetu':"TG00000000000000000000",
+            })
         
-        return Response(serializer.data)
+        
     
-
-
-
 
 class cesta_predmetu(APIView):
     
     # Zídkání pozic všech karet, kterými putovní předmět prošel
-    
     def post(self, request, *args, **kwargs):
         cardstoget = []
         cardstoget = request.data
@@ -146,9 +147,6 @@ class cesta_predmetu(APIView):
                 'position':{'lng':Decimal(serializer.data['zemdelka']), 'lat':Decimal(serializer.data['zemsirka'])}}
             cardstosend.append(pozice)
         return Response(cardstosend)
-    
-    
-    
     
     
     
@@ -253,10 +251,10 @@ class user_register(APIView):
     # Povolení pro přístup k tomuto endpointu, nsataveno volné pro všechny
     permission_classes = (AllowAny,)
 
-    def get(self, request):
-        queryset = get_user_model().objects.all()
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+    #def get(self, request):
+    #    queryset = get_user_model().objects.all()
+    #    serializer = UserSerializer(queryset, many=True)
+    #    return Response(serializer.data)
     
     # Vytvoření nového uživatele
     def post(self, request):
@@ -281,8 +279,12 @@ class user_register(APIView):
         returnPLayer = Hrac.objects.get(id=hrac_serializer.data['id'])
         newSer = HracSerializer(returnPLayer)
         
-        # TODO: certifikát
 
+        
+        # TODO: certifikát
+        certhelper.createcert(hrac_serializer.data['id'])
+        
+        
         return Response(newSer.data)
 
 
@@ -309,7 +311,8 @@ class item_upload(APIView):
                 'vlastnik':vlas,
                 'obrazek':image,
                 'idpozice':player,
-                'cesta':"images/"+cesta}
+                'cesta':"images/"+cesta
+                }
             
             itemserializer = PutovniPredmetSerializer(data=item)
             itemserializer.is_valid(raise_exception=True)
@@ -350,34 +353,42 @@ class open_cache(APIView):
         player.otevrenekese.append(cache_id)
         player.otevrenekesepoc = player.otevrenekesepoc+1
         cache.save()
+        
+        for key in player.sberpredmet:
+            print(key)
+            print(player.sberpredmet[key])
+            if player.sberpredmet[key] == False:
+                player.sberpredmet[key] = True
+                break
+        
         player.save()
         
-        #try:
-        putpredmet1 = PutovniPredmet.objects.get(idpozice=player_id)
-        putpredmet2 = PutovniPredmet.objects.get(idpozice=cache_id)
-        putpredmet1.idpozice = cache_id
-        putpredmet2.idpozice = player_id
-        putpredmet1.pozice = True
-        putpredmet2.pozice = False
-        putpredmet1.karty.append(cache_id)
-        putpredmet1.save()
-        putpredmet2.save()
-        #except:
-        #    pass
+        try:
+            putpredmet1 = PutovniPredmet.objects.get(idpozice=player_id)
+            
+        except:
+            pass
+        try:
+            putpredmet2 = PutovniPredmet.objects.get(idpozice=cache_id)
+        except:
+            pass
+        try:    
+            putpredmet2.idpozice = player_id
+            putpredmet2.pozice = False
+            putpredmet2.save()
+        except:
+            pass
+        try:
+            putpredmet1.idpozice = cache_id
+            putpredmet1.pozice = True
+            putpredmet1.karty.append(cache_id)
+            putpredmet1.save()
+        except:
+            pass
         
-        #try:
         
         
         
-        
-        #except:
-        #    pass
-        
-        # zvyseni poctu nalezu karty a hrace
-        # U hrace take zarazeni kese do seznamu nalezenych kesi
-        
-        
-        # TODO funkce pro odemknuti sber. predmetu
         return Response({"success": True})
 
 
