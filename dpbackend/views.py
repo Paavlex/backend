@@ -282,7 +282,7 @@ class user_register(APIView):
 
         
         # TODO: certifikát
-        certhelper.createcert(hrac_serializer.data['id'])
+        certhelper.createcert(newSer.data['player_id'])
         
         
         return Response(newSer.data)
