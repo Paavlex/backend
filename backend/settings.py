@@ -95,20 +95,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 # Nastavení databáze
+import dj_database_url
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        'NAME': 'dpdatabaze',
-
-        'USER': 'postgres',
-
-        'PASSWORD': 'postgres',
-
-        'HOST': 'localhost',
-
-        'PORT': '5432',
-    }
+    
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#
+#        'NAME': 'dpdatabaze',
+#
+#        'USER': 'postgres',
+#
+#        'PASSWORD': 'postgres',
+#
+#        'HOST': 'localhost',
+#
+#        'PORT': '5432',
+#    }
+    'default': dj_database_url.parse('postgres://dpdatabaze_user:miMuCz2MHi30Qa4LunZYub7i0LLnzIgV@dpg-cgpss55269v5rj8gkifg-a.frankfurt-postgres.render.com/dpdatabaze')
 }
 
 
