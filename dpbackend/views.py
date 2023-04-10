@@ -359,6 +359,7 @@ class open_cache(APIView):
             print(player.sberpredmet[key])
             if player.sberpredmet[key] == False:
                 player.sberpredmet[key] = True
+                player.pocetsberpred=player.pocetsberpred+1
                 break
         
         player.save()
