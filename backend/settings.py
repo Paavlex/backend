@@ -111,7 +111,7 @@ DATABASES = {
 #
 #        'PORT': '5432',
 #    }
-    'default': dj_database_url.parse('postgres://dpdatabaze_user:miMuCz2MHi30Qa4LunZYub7i0LLnzIgV@dpg-cgpss55269v5rj8gkifg-a.frankfurt-postgres.render.com/dpdatabaze')
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
 }
 
 
