@@ -9,7 +9,3 @@ The backend is capable of creating new players, giving information about players
 The backend is also able to create orders for new caches, those are saved in the _objednavky_ folder, orsers are saved in .txt and contain a dictionary of needed information
 
 
-## Future Updates:
-1. Use of JWT (JSON Web Token) for token authentication
-2. Connecting to other system, mainly creating phone app to work with this
-3. Connecting to Frontend (Angular){Will be published in another repository}
